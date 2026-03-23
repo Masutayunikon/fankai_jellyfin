@@ -20,7 +20,7 @@ using System.Net.Http.Headers;
 namespace Jellyfin.Plugin.Fankai.Api;
 
 /// <summary>
-/// Client pour interagir avec l'API Fankai.
+/// Client pour interagir avec l'API Fankaii.
 /// </summary>
 public class FankaiApiClient
 {
