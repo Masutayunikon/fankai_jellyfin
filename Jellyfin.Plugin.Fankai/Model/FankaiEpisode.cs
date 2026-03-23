@@ -16,9 +16,6 @@ public class FankaiEpisode
     [JsonPropertyName("episode_number")]
     public int? EpisodeNumber { get; set; }
 
-    [JsonPropertyName("season_number")]
-    public int? SeasonNumber { get; set; }
-
     [JsonPropertyName("display_episode")]
     public string? DisplayEpisode { get; set; }
 
@@ -28,11 +25,14 @@ public class FankaiEpisode
     [JsonPropertyName("title")]
     public string? Title { get; set; }
 
+    [JsonPropertyName("show_title")]
+    public string? ShowTitle { get; set; }
+
     [JsonPropertyName("plot")]
     public string? Plot { get; set; }
 
     [JsonPropertyName("aired")]
-    public string? Aired { get; set; } // Date (format yyyy-MM-dd)
+    public string? Aired { get; set; }
 
     [JsonPropertyName("mpaa")]
     public string? Mpaa { get; set; }
@@ -44,7 +44,7 @@ public class FankaiEpisode
     public string? DateAdded { get; set; }
 
     [JsonPropertyName("duration")]
-    public int? DurationInSeconds { get; set; } // En secondes
+    public int? DurationInSeconds { get; set; }
 
     [JsonPropertyName("audio_info")]
     public string? AudioInfo { get; set; }
@@ -54,7 +54,7 @@ public class FankaiEpisode
 
     [JsonPropertyName("nfo_filename")]
     public string? NfoFilename { get; set; }
-    
+
     [JsonPropertyName("nfo_path")]
     public string? NfoPath { get; set; }
 
@@ -67,9 +67,8 @@ public class FankaiEpisode
     [JsonPropertyName("thumb_image")]
     public string? ThumbImageUrl { get; set; }
 
-    // Champs additionnels de l'endpoint /seasons/{season_id}/episodes
-    [JsonPropertyName("has_thumbnail")]
-    public bool? HasThumbnail { get; set; }
+    [JsonPropertyName("last_update")]
+    public double? LastUpdate { get; set; }
 
     [JsonPropertyName("links")]
     public EpisodeLinks? Links { get; set; }
@@ -77,12 +76,9 @@ public class FankaiEpisode
 
 public class EpisodeLinks
 {
-    [JsonPropertyName("thumbnail")]
-    public string? ThumbnailApiUrl { get; set; } // ex: "/episodes/1/image"
-
     [JsonPropertyName("season")]
-    public string? SeasonApiUrl { get; set; } // ex: "/seasons/1"
+    public string? SeasonApiUrl { get; set; }
 
     [JsonPropertyName("serie")]
-    public string? SerieApiUrl { get; set; } // ex: "/series/1"
+    public string? SerieApiUrl { get; set; }
 }

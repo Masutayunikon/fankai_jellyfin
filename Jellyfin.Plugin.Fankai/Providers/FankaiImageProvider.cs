@@ -32,7 +32,7 @@ public class FankaiImageProvider : IRemoteImageProvider
 #endif
     private readonly FankaiApiClient _apiClient;
 
-    public const string FankaiSeasonIdProviderKey = "FankaiSeasonId"; 
+    public const string FankaiSeasonIdProviderKey = "FankaiSeasonId";
 
 #if __EMBY__
     public FankaiImageProvider(IHttpClient httpClient, ILogManager logManager)
@@ -77,7 +77,6 @@ public class FankaiImageProvider : IRemoteImageProvider
 #endif
     }
 
-    // Explicit implementation to avoid ambiguity
     public bool Supports(MediaBrowser.Controller.Entities.BaseItem item)
     {
         return item is Series || item is Season || item is Episode;
@@ -96,6 +95,7 @@ public class FankaiImageProvider : IRemoteImageProvider
                 MediaBrowser.Model.Entities.ImageType.Thumb
             };
         }
+
         if (item is Season)
         {
             return new List<MediaBrowser.Model.Entities.ImageType>
@@ -104,6 +104,7 @@ public class FankaiImageProvider : IRemoteImageProvider
                 MediaBrowser.Model.Entities.ImageType.Backdrop
             };
         }
+
         if (item is Episode)
         {
             return new List<MediaBrowser.Model.Entities.ImageType>
@@ -111,6 +112,7 @@ public class FankaiImageProvider : IRemoteImageProvider
                 MediaBrowser.Model.Entities.ImageType.Primary
             };
         }
+
         return Enumerable.Empty<MediaBrowser.Model.Entities.ImageType>();
     }
 
@@ -147,11 +149,11 @@ public class FankaiImageProvider : IRemoteImageProvider
                 var serieData = await _apiClient.GetSerieByIdAsync(currentFankaiSeriesId, cancellationToken).ConfigureAwait(false);
                 if (serieData != null)
                 {
-                    AddImageIfUrlValid(images, serieData.Images?.PosterApiUrl ?? serieData.PosterImageUrl, MediaBrowser.Model.Entities.ImageType.Primary);
-                    AddImageIfUrlValid(images, serieData.Images?.FanartApiUrl ?? serieData.FanartImageUrl, MediaBrowser.Model.Entities.ImageType.Backdrop);
-                    AddImageIfUrlValid(images, serieData.Images?.BannerApiUrl ?? serieData.BannerImageUrl, MediaBrowser.Model.Entities.ImageType.Banner);
-                    AddImageIfUrlValid(images, serieData.Images?.LogoApiUrl ?? serieData.LogoImageUrl, MediaBrowser.Model.Entities.ImageType.Logo);
-                    AddImageIfUrlValid(images, serieData.Images?.PosterApiUrl ?? serieData.PosterImageUrl, MediaBrowser.Model.Entities.ImageType.Thumb);
+                    AddImageIfUrlValid(images, serieData.Images?.PosterApiUrl, MediaBrowser.Model.Entities.ImageType.Primary);
+                    AddImageIfUrlValid(images, serieData.Images?.FanartApiUrl, MediaBrowser.Model.Entities.ImageType.Backdrop);
+                    AddImageIfUrlValid(images, serieData.Images?.BannerApiUrl, MediaBrowser.Model.Entities.ImageType.Banner);
+                    AddImageIfUrlValid(images, serieData.Images?.LogoApiUrl, MediaBrowser.Model.Entities.ImageType.Logo);
+                    AddImageIfUrlValid(images, serieData.Images?.PosterApiUrl, MediaBrowser.Model.Entities.ImageType.Thumb);
                 }
             }
         }
@@ -166,24 +168,27 @@ public class FankaiImageProvider : IRemoteImageProvider
 
             var seasonsResponse = await _apiClient.GetSeasonsForSerieAsync(parentSeriesFankaiId, cancellationToken).ConfigureAwait(false);
             Model.FankaiSeason? seasonData = null;
+
             if (!string.IsNullOrWhiteSpace(fankaiSpecificId))
             {
-                 seasonData = seasonsResponse?.Seasons?.FirstOrDefault(s => s.Id.ToString(CultureInfo.InvariantCulture) == fankaiSpecificId);
+                seasonData = seasonsResponse?.Seasons?.FirstOrDefault(s => s.Id.ToString(CultureInfo.InvariantCulture) == fankaiSpecificId);
             }
+
             if (seasonData == null && season.IndexNumber.HasValue)
             {
                 seasonData = seasonsResponse?.Seasons?.FirstOrDefault(s => s.SeasonNumber == season.IndexNumber.Value);
             }
-            
+
             if (seasonData != null)
             {
                 if (string.IsNullOrWhiteSpace(season.GetProviderId(FankaiSeasonIdProviderKey)))
                 {
-                     season.SetProviderId(FankaiSeasonIdProviderKey, seasonData.Id.ToString(CultureInfo.InvariantCulture));
-                     LogDebug("Stockage de FankaiSeasonIdProviderKey {0} pour la Saison {1}", seasonData.Id, season.Name);
+                    season.SetProviderId(FankaiSeasonIdProviderKey, seasonData.Id.ToString(CultureInfo.InvariantCulture));
+                    LogDebug("Stockage de FankaiSeasonIdProviderKey {0} pour la Saison {1}", seasonData.Id, season.Name);
                 }
-                AddImageIfUrlValid(images, seasonData.Images?.PosterApiUrl ?? seasonData.PosterImageUrl, MediaBrowser.Model.Entities.ImageType.Primary);
-                AddImageIfUrlValid(images, seasonData.Images?.FanartApiUrl ?? seasonData.FanartImageUrl, MediaBrowser.Model.Entities.ImageType.Backdrop);
+
+                AddImageIfUrlValid(images, seasonData.Images?.PosterApiUrl, MediaBrowser.Model.Entities.ImageType.Primary);
+                AddImageIfUrlValid(images, seasonData.Images?.FanartApiUrl, MediaBrowser.Model.Entities.ImageType.Backdrop);
             }
             else
             {
@@ -215,30 +220,33 @@ public class FankaiImageProvider : IRemoteImageProvider
                 LogWarn("Impossible de déterminer l'ID Fankai de la saison parente pour l'épisode {0} (ID: {1})", episode.Name, episode.Id);
                 return images;
             }
-            
+
             var episodesResponse = await _apiClient.GetEpisodesForSeasonAsync(seasonFankaiIdToUse, cancellationToken).ConfigureAwait(false);
             Model.FankaiEpisode? episodeData = null;
-            if(!string.IsNullOrWhiteSpace(fankaiSpecificId))
+
+            if (!string.IsNullOrWhiteSpace(fankaiSpecificId))
             {
                 episodeData = episodesResponse?.Episodes?.FirstOrDefault(e => e.Id.ToString(CultureInfo.InvariantCulture) == fankaiSpecificId);
             }
+
             if (episodeData == null && episode.IndexNumber.HasValue)
             {
-                 episodeData = episodesResponse?.Episodes?.FirstOrDefault(e => e.EpisodeNumber == episode.IndexNumber.Value);
+                episodeData = episodesResponse?.Episodes?.FirstOrDefault(e => e.EpisodeNumber == episode.IndexNumber.Value);
             }
 
             if (episodeData != null)
             {
-                 if (string.IsNullOrWhiteSpace(episode.GetProviderId(EpisodeProvider.ProviderIdName)))
+                if (string.IsNullOrWhiteSpace(episode.GetProviderId(EpisodeProvider.ProviderIdName)))
                 {
-                     episode.SetProviderId(EpisodeProvider.ProviderIdName, episodeData.Id.ToString(CultureInfo.InvariantCulture));
-                     LogDebug("ID de l'épisode Fankai stocké {0} pour l'épisode {1}", episodeData.Id, episode.Name);
+                    episode.SetProviderId(EpisodeProvider.ProviderIdName, episodeData.Id.ToString(CultureInfo.InvariantCulture));
+                    LogDebug("ID de l'épisode Fankai stocké {0} pour l'épisode {1}", episodeData.Id, episode.Name);
                 }
-                AddImageIfUrlValid(images, episodeData.Links?.ThumbnailApiUrl ?? episodeData.ThumbImageUrl, MediaBrowser.Model.Entities.ImageType.Primary);
+
+                AddImageIfUrlValid(images, episodeData.ThumbImageUrl, MediaBrowser.Model.Entities.ImageType.Primary);
             }
             else
             {
-                 LogWarn("Impossible de trouver les données de l'épisode correspondant pour l'épisode {0} dans l'ID de saison {1}", episode.IndexNumber, seasonFankaiIdToUse);
+                LogWarn("Impossible de trouver les données de l'épisode correspondant pour l'épisode {0} dans l'ID de saison {1}", episode.IndexNumber, seasonFankaiIdToUse);
             }
         }
 
@@ -258,20 +266,20 @@ public class FankaiImageProvider : IRemoteImageProvider
             });
         }
     }
-    
+
 #if __EMBY__
     public async Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancellationToken)
     {
         var options = new MediaBrowser.Common.Net.HttpRequestOptions
         {
-             Url = url,
-             CancellationToken = cancellationToken,
-             BufferContent = false 
+            Url = url,
+            CancellationToken = cancellationToken,
+            BufferContent = false
         };
         var response = await _httpClient.GetResponse(options).ConfigureAwait(false);
         if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
-             throw new Exception($"Failed to get image: {response.StatusCode}");
+            throw new Exception($"Failed to get image: {response.StatusCode}");
         }
         return response;
     }

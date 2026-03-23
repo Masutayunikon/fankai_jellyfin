@@ -3,31 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace Jellyfin.Plugin.Fankai.Model;
 
-// Pour l'endpoint GET /series
-public class PaginatedSeriesResponse
-{
-    [JsonPropertyName("series")]
-    public List<FankaiSerie>? Series { get; set; }
-
-    [JsonPropertyName("pagination")]
-    public PaginationInfo? Pagination { get; set; }
-}
-
-public class PaginationInfo
-{
-    [JsonPropertyName("current_page")]
-    public int CurrentPage { get; set; }
-
-    [JsonPropertyName("per_page")]
-    public int PerPage { get; set; }
-
-    [JsonPropertyName("total_items")]
-    public int TotalItems { get; set; }
-
-    [JsonPropertyName("total_pages")]
-    public int TotalPages { get; set; }
-}
-
 // Pour l'endpoint GET /series/{serie_id}/seasons
 public class SerieSeasonsResponse
 {

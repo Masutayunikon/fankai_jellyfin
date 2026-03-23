@@ -26,9 +26,9 @@ namespace Jellyfin.Plugin.Fankai.Providers;
 public class SeasonProvider : IRemoteMetadataProvider<Season, SeasonInfo>, IHasOrder
 {
     public string Name => "Fankai Season Provider";
-    
+
     // S'exécute après le SeriesProvider (Order = 3) pour s'assurer que l'ID de série est disponible.
-    public int Order => 4; 
+    public int Order => 4;
 
 #if __EMBY__
     private readonly MediaBrowser.Model.Logging.ILogger _logger;
@@ -78,9 +78,9 @@ public class SeasonProvider : IRemoteMetadataProvider<Season, SeasonInfo>, IHasO
 
     public async Task<MetadataResult<Season>> GetMetadata(SeasonInfo info, CancellationToken cancellationToken)
     {
-        LogInfo("Fankai GetMetadata pour Season: Nom='{0}', Numéro de saison={1}", 
+        LogInfo("Fankai GetMetadata pour Season: Nom='{0}', Numéro de saison={1}",
             info.Name, info.IndexNumber);
-        
+
         var result = new MetadataResult<Season>();
 
         // 1. Obtenir l'ID Fankai de la série parente. C'est indispensable.
@@ -101,14 +101,14 @@ public class SeasonProvider : IRemoteMetadataProvider<Season, SeasonInfo>, IHasO
 
         // 3. Trouver la saison correspondante dans la liste retournée par l'API.
         FankaiSeason? matchedSeason = null;
-        
+
         // Priorité 1 : Chercher avec un ID de saison Fankai déjà stocké.
         if (info.ProviderIds.TryGetValue(ProviderIdName, out var seasonId))
         {
             matchedSeason = seasonsResponse.Seasons.FirstOrDefault(s => s.Id.ToString(CultureInfo.InvariantCulture) == seasonId);
         }
 
-        // Priorité 2 (Fallback) : Chercher par le numéro de saison si aucun ID n'est trouvé.
+        // Priorité 2 : chercher par numéro de saison.
         if (matchedSeason == null && info.IndexNumber.HasValue)
         {
             matchedSeason = seasonsResponse.Seasons.FirstOrDefault(s => s.SeasonNumber == info.IndexNumber.Value);
@@ -116,11 +116,11 @@ public class SeasonProvider : IRemoteMetadataProvider<Season, SeasonInfo>, IHasO
 
         if (matchedSeason == null)
         {
-            LogWarn("Impossible de faire correspondre la saison (Numéro: {0}) avec les données de l'API Fankai pour la série ID {1}", 
+            LogWarn("Impossible de faire correspondre la saison (Numéro: {0}) avec les données de l'API Fankai pour la série ID {1}",
                 info.IndexNumber, fankaiSeriesId);
             return result;
         }
-        
+
         LogInfo("Correspondance trouvée pour la saison : {0} (ID Fankai: {1})", matchedSeason.Title, matchedSeason.Id);
 
         // 4. Remplir l'objet Season avec les métadonnées.
@@ -136,43 +136,43 @@ public class SeasonProvider : IRemoteMetadataProvider<Season, SeasonInfo>, IHasO
             ForcedSortName = matchedSeason.SortTitle
 #endif
         };
-        
-        // Logique pour l'année de production
-        if (matchedSeason.Year.HasValue)
-        {
-            result.Item.ProductionYear = matchedSeason.Year.Value;
-        }
-        else if (DateTime.TryParse(matchedSeason.Premiered, out var premiereDate))
+
+        // Déduire l'année depuis la date de première diffusion
+        if (DateTime.TryParse(matchedSeason.Premiered, out var premiereDate))
         {
             result.Item.ProductionYear = premiereDate.Year;
         }
 
-        // 5. Stocker les IDs de fournisseurs (Fankai, IMDb, TMDB, TVDB).
-        // CORRECTION : Utilisation de l'indexeur '[]' pour garantir que les IDs sont définis (ajoutés ou écrasés).
+        // 5. Stocker les IDs de fournisseurs.
         result.Item.ProviderIds[ProviderIdName] = matchedSeason.Id.ToString(CultureInfo.InvariantCulture);
-        if (!string.IsNullOrWhiteSpace(matchedSeason.ImdbId)) {
-#if __EMBY__
-             result.Item.SetProviderId("Imdb", matchedSeason.ImdbId);
-#else
-             result.Item.SetProviderId(MetadataProvider.Imdb, matchedSeason.ImdbId);
-#endif
-        }
-        if (!string.IsNullOrWhiteSpace(matchedSeason.TmdbId)) {
-#if __EMBY__
-            result.Item.SetProviderId("Tmdb", matchedSeason.TmdbId);
-#else
-            result.Item.SetProviderId(MetadataProvider.Tmdb, matchedSeason.TmdbId);
-#endif
-        }
-        if (!string.IsNullOrWhiteSpace(matchedSeason.TvdbId))
+
+        if (!string.IsNullOrWhiteSpace(matchedSeason.Ids?.Imdb))
         {
 #if __EMBY__
-            result.Item.SetProviderId("Tvdb", matchedSeason.TvdbId);
+            result.Item.SetProviderId("Imdb", matchedSeason.Ids.Imdb);
 #else
-            result.Item.SetProviderId(MetadataProvider.Tvdb, matchedSeason.TvdbId);
+            result.Item.SetProviderId(MetadataProvider.Imdb, matchedSeason.Ids.Imdb);
 #endif
         }
-        
+
+        if (!string.IsNullOrWhiteSpace(matchedSeason.Ids?.Tmdb))
+        {
+#if __EMBY__
+            result.Item.SetProviderId("Tmdb", matchedSeason.Ids.Tmdb);
+#else
+            result.Item.SetProviderId(MetadataProvider.Tmdb, matchedSeason.Ids.Tmdb);
+#endif
+        }
+
+        if (!string.IsNullOrWhiteSpace(matchedSeason.Ids?.Tvdb))
+        {
+#if __EMBY__
+            result.Item.SetProviderId("Tvdb", matchedSeason.Ids.Tvdb);
+#else
+            result.Item.SetProviderId(MetadataProvider.Tvdb, matchedSeason.Ids.Tvdb);
+#endif
+        }
+
         result.HasMetadata = true;
         return result;
     }
@@ -182,7 +182,7 @@ public class SeasonProvider : IRemoteMetadataProvider<Season, SeasonInfo>, IHasO
         LogInfo("La recherche de saison n'est pas supportée et n'est généralement pas nécessaire. Elle est identifiée via la série parente.");
         return Task.FromResult(Enumerable.Empty<RemoteSearchResult>());
     }
-    
+
     private DateTime? TryParseDate(string? dateString)
     {
         if (string.IsNullOrWhiteSpace(dateString)) return null;
@@ -201,7 +201,7 @@ public class SeasonProvider : IRemoteMetadataProvider<Season, SeasonInfo>, IHasO
         {
              Url = url,
              CancellationToken = cancellationToken,
-             BufferContent = false 
+             BufferContent = false
         };
         var response = await _httpClient.GetResponse(options).ConfigureAwait(false);
         if (response.StatusCode != System.Net.HttpStatusCode.OK)

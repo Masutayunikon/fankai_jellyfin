@@ -183,7 +183,7 @@ public class FankaiApiClient
 
     public Task<List<FankaiSerie>?> GetAllSeriesAsync(CancellationToken cancellationToken)
     {
-        return GetAsync<List<FankaiSerie>>("series?paginate=false", cancellationToken);
+        return GetAsync<List<FankaiSerie>>("series", cancellationToken);
     }
     
     public Task<SerieSeasonsResponse?> GetSeasonsForSerieAsync(string serieId, CancellationToken cancellationToken)

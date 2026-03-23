@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Jellyfin.Plugin.Fankai.Model;
 
@@ -13,10 +13,6 @@ public class FankaiSerie
 
     [JsonPropertyName("title")]
     public string? Title { get; set; }
-
-    // Ajout de la propriété SortTitle
-    [JsonPropertyName("sort_title")]
-    public string? SortTitle { get; set; }
 
     [JsonPropertyName("original_title")]
     public string? OriginalTitle { get; set; }
@@ -33,20 +29,8 @@ public class FankaiSerie
     [JsonPropertyName("plot")]
     public string? Plot { get; set; }
 
-    [JsonPropertyName("rating_value")]
-    public float? RatingValue { get; set; }
-
-    [JsonPropertyName("rating_votes")]
-    public int? RatingVotes { get; set; }
-
-    [JsonPropertyName("rating_name")]
-    public string? RatingName { get; set; }
-
-    [JsonPropertyName("mpaa")]
-    public string? Mpaa { get; set; } // Classification
-
     [JsonPropertyName("premiered")]
-    public string? Premiered { get; set; } // Date de première diffusion (format yyyy-MM-dd)
+    public string? Premiered { get; set; }
 
     [JsonPropertyName("studio")]
     public string? Studio { get; set; }
@@ -55,37 +39,25 @@ public class FankaiSerie
     public string? Country { get; set; }
 
     [JsonPropertyName("genres")]
-    public string? Genres { get; set; } // Chaîne de genres séparés par des virgules
-
-    [JsonPropertyName("banner_image")]
-    public string? BannerImageUrl { get; set; }
-
-    [JsonPropertyName("fanart_image")]
-    public string? FanartImageUrl { get; set; }
-
-    [JsonPropertyName("logo_image")]
-    public string? LogoImageUrl { get; set; }
-
-    [JsonPropertyName("poster_image")]
-    public string? PosterImageUrl { get; set; }
+    public string? Genres { get; set; }
 
     [JsonPropertyName("theme_music")]
     public string? ThemeMusicUrl { get; set; }
-    
+
     [JsonPropertyName("status")]
     public string? Status { get; set; }
 
-    [JsonPropertyName("tagline")]
-    public string? Tagline { get; set; }
+    [JsonPropertyName("date_added")]
+    public string? DateAdded { get; set; }
 
-    [JsonPropertyName("imdb_id")]
-    public string? ImdbId { get; set; }
+    [JsonPropertyName("last_update")]
+    public double? LastUpdate { get; set; }
 
-    [JsonPropertyName("tmdb_id")]
-    public string? TmdbId { get; set; }
+    [JsonPropertyName("ids")]
+    public SerieIds? Ids { get; set; }
 
-    [JsonPropertyName("tvdb_id")]
-    public string? TvdbId { get; set; }
+    [JsonPropertyName("rating")]
+    public SerieRating? Rating { get; set; }
 
     [JsonPropertyName("statistics")]
     public SerieStatistics? Statistics { get; set; }
@@ -95,6 +67,33 @@ public class FankaiSerie
 
     [JsonPropertyName("images")]
     public SerieImageLinks? Images { get; set; }
+}
+
+public class SerieIds
+{
+    [JsonPropertyName("imdb")]
+    public string? Imdb { get; set; }
+
+    [JsonPropertyName("tmdb")]
+    public string? Tmdb { get; set; }
+
+    [JsonPropertyName("tvdb")]
+    public string? Tvdb { get; set; }
+}
+
+public class SerieRating
+{
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("user")]
+    public float? User { get; set; }
+
+    [JsonPropertyName("value")]
+    public float? Value { get; set; }
+
+    [JsonPropertyName("votes")]
+    public int? Votes { get; set; }
 }
 
 public class SerieStatistics

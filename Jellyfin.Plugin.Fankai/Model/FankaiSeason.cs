@@ -26,30 +26,13 @@ public class FankaiSeason
     public string? Plot { get; set; }
 
     [JsonPropertyName("premiered")]
-    public string? Premiered { get; set; } // Date (format yyyy-MM-dd)
+    public string? Premiered { get; set; }
 
-    [JsonPropertyName("poster_image")]
-    public string? PosterImageUrl { get; set; }
+    [JsonPropertyName("last_update")]
+    public double? LastUpdate { get; set; }
 
-    [JsonPropertyName("fanart_image")]
-    public string? FanartImageUrl { get; set; }
-
-
-    [JsonPropertyName("year")]
-    public int? Year { get; set; }
-
-    [JsonPropertyName("imdb_id")]
-    public string? ImdbId { get; set; }
-
-    [JsonPropertyName("tmdb_id")]
-    public string? TmdbId { get; set; }
-
-    [JsonPropertyName("tvdb_id")]
-    public string? TvdbId { get; set; }
-
-    // Champs additionnels de l'endpoint /series/{serie_id}/seasons
-    [JsonPropertyName("serie_title")]
-    public string? SerieTitle { get; set; }
+    [JsonPropertyName("ids")]
+    public SeasonIds? Ids { get; set; }
 
     [JsonPropertyName("statistics")]
     public SeasonStatistics? Statistics { get; set; }
@@ -59,6 +42,18 @@ public class FankaiSeason
 
     [JsonPropertyName("images")]
     public SeasonImageLinks? Images { get; set; }
+}
+
+public class SeasonIds
+{
+    [JsonPropertyName("imdb")]
+    public string? Imdb { get; set; }
+
+    [JsonPropertyName("tmdb")]
+    public string? Tmdb { get; set; }
+
+    [JsonPropertyName("tvdb")]
+    public string? Tvdb { get; set; }
 }
 
 public class SeasonStatistics
@@ -79,16 +74,16 @@ public class SeasonStatistics
 public class SeasonLinks
 {
     [JsonPropertyName("episodes")]
-    public string? EpisodesApiUrl { get; set; } // ex: "/seasons/1/episodes"
+    public string? EpisodesApiUrl { get; set; }
 
     [JsonPropertyName("serie")]
-    public string? SerieApiUrl { get; set; } // ex: "/series/1"
+    public string? SerieApiUrl { get; set; }
 }
 
 public class SeasonImageLinks
 {
     [JsonPropertyName("poster")]
-    public string? PosterApiUrl { get; set; } // ex: "/seasons/1/image/poster"
+    public string? PosterApiUrl { get; set; }
 
     [JsonPropertyName("fanart")]
     public string? FanartApiUrl { get; set; }
