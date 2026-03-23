@@ -10,6 +10,14 @@
     "versions": [
       {
         "version": "3.0.3",
+        "changelog": "fix: fix pour la nouvelles api",
+        "targetAbi": "4.8.0.0",
+        "sourceUrl": "https://github.com/Masutayunikon/fankai_jellyfin/releases/download/v3.0.3/Jellyfin.Plugin.Fankai.Emby.zip",
+        "checksum": "6594403059de913faa8a146635df6447",
+        "timestamp": "2026-03-23T17:18:27Z"
+      },
+      {
+        "version": "3.0.3",
         "changelog": "fix(providers): use length-based percentage for Levenshtein search score to prevent false positives",
         "targetAbi": "4.8.0.0",
         "sourceUrl": "https://github.com/Nackophilz/fankai_jellyfin/releases/download/v3.0.3/Jellyfin.Plugin.Fankai.Emby.zip",
